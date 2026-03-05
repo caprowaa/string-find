@@ -5,6 +5,7 @@
 #include <set>
 #include <tlhelp32.h>
 
+// Функция для извлечения строк
 void ExtractStrings(const std::vector<char>& buffer, std::set<std::string>& foundStrings) {
     std::string currentAscii;
     std::string currentUnicode;
@@ -55,32 +56,4 @@ DWORD GetPidByName(const std::wstring& name) {
     HANDLE snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
     PROCESSENTRY32W entry = { sizeof(entry) };
     if (Process32FirstW(snap, &entry)) {
-        do { if (name == entry.szExeFile) { pid = entry.th32ProcessID; break; } } while (Process32NextW(snap, &entry));
-    }
-    CloseHandle(snap);
-    return pid;
-}
-
-int main() {
-    setlocale(LC_ALL, "Russian");
-    DWORD pid = GetPidByName(L"javaw.exe");
-    if (!pid) { std::cout << "[-] javaw.exe (Minecraft) не найден!" << std::endl; system("pause"); return 1; }
-    HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
-    if (!hProcess) { std::cout << "[-] Ошибка доступа. Запусти от АДМИНА!" << std::endl; system("pause"); return 1; }
-
-    std::cout << "[*] Снимаю базу ДО инъекции..." << std::endl;
-    auto before = GetAllStrings(hProcess);
-    std::cout << "[+] База готова. Нажми ENTER ПОСЛЕ ИНЖЕКТА софта..." << std::endl;
-    std::cin.get();
-
-    std::cout << "[*] Снимаю второй снимок..." << std::endl;
-    auto after = GetAllStrings(hProcess);
-    std::cout << "\n[!] НОВЫЕ СТРИНГИ:\n------------------" << std::endl;
-    for (const auto& s : after) {
-        if (before.find(s) == before.end()) std::cout << "[NEW] " << s << std::endl;
-    }
-    CloseHandle(hProcess);
-    std::cout << "\n[*] Анализ завершен." << std::endl;
-    system("pause");
-    return 0;
-}
+        do { if (name == entry.szExeFile) { pid = entry.th32ProcessID; break; } } while (Process32NextW(snap, &
