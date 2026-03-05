@@ -5,8 +5,9 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v3
-      
+      - name: Checkout Code
+        uses: actions/checkout@v4 # Обновили до v4
+
       - name: Setup MSVC
         uses: ilammy/msvc-dev-cmd@v1
 
@@ -14,7 +15,7 @@ jobs:
         run: cl.exe /EHsc /W3 main.cpp /Fe:StringFinder.exe user32.lib advapi32.lib
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4 # Вот здесь была ошибка, теперь v4
         with:
           name: StringFinder-Build
           path: StringFinder.exe
